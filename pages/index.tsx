@@ -37,8 +37,7 @@ export default function Home() {
           console.log('Service worker successfully registered.');
           const subscribeOptions: PushSubscriptionOptionsInit = {
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-              'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'),
+            applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
           };
           // unsubscribe from current subscription
           // const subscirption: PushSubscription | null = await registration.pushManager.getSubscription()
@@ -56,17 +55,15 @@ export default function Home() {
   }, [])
 
 
-  function urlBase64ToUint8Array(base64String: string) {
+  function urlBase64ToUint8Array(string: string) {
+    const base64String = string || Buffer.from(string).toString('base64')
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/')
+    ;
+    const rawData: string = window.atob(base64);
+    return Uint8Array.from(rawData.split('').map((char) => char.charCodeAt(0)));
   }
 
   /**
