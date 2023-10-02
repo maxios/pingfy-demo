@@ -59,7 +59,7 @@ export default function Home() {
 
 
   const askNotificationPermission = useCallback(() => {
-    if (!window.Notification) {
+    if (!window?.Notification) {
       return alert("This browser does not support desktop notification");
     } else if (window.Notification.permission === "granted") {
       new window.Notification("Hi theee the notification permission has been granted for pingfy!");
@@ -86,7 +86,7 @@ export default function Home() {
     <> 
       <p>version1</p>
       <button id="notificationButton">Enable Notifications</button>
-      <p>permission: </p>{window.Notification.permission}
+      <p>permission: </p>
       <p>Subscription: </p> {JSON.stringify(subscription)}
       <button onClick={askPermissionAndSubscribe}>Subscribe</button>
     </>
