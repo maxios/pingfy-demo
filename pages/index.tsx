@@ -43,6 +43,7 @@ export default function Home() {
             applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
           };
 
+          console.log('will subscribe')
           registration.pushManager.subscribe(subscribeOptions).then((pushSubscription) => {
             console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
             setSubscription(pushSubscription)
@@ -59,6 +60,7 @@ export default function Home() {
 
 
   const askNotificationPermission = useCallback(() => {
+    // const notificationManager = window.Notification || ServiceWorkerRegistration.showNotification()
     if (!window?.Notification) {
       return alert("This browser does not support desktop notification");
     } else if (window.Notification.permission === "granted") {
