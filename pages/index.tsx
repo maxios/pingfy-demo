@@ -64,25 +64,26 @@ export default function Home() {
   // }, [])
 
   const registerServiceWorker = useCallback(() => {
-      if (!navigator.serviceWorker) return;
+      if (!navigator.serviceWorker) {
+        console.log('there is no service worker support!')
+        return;
+      }
       return navigator.serviceWorker
         .register('/service-worker.js')
         .then((registration) => {
-          console.log('Service worker successfully registered.');
+          // console.log('Service worker successfully registered.');
           registration.showNotification('Hi there, it is the service worker!');
-          const subscribeOptions: PushSubscriptionOptionsInit = {
-            userVisibleOnly: true,
-            applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
-          };
+          // const subscribeOptions: PushSubscriptionOptionsInit = {
+          //   userVisibleOnly: true,
+          //   applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
+          // };
 
-          console.log('will subscribe')
-          registration.pushManager.getSubscription().then(console.log).catch(console.log)
-          registration.pushManager.permissionState().then(console.log).catch(console.log)
-          registration.pushManager.subscribe(subscribeOptions).then((pushSubscription) => {
-            console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-            setSubscription(pushSubscription)
-            sendSubscriptionToBackEnd(pushSubscription);
-          });
+          // console.log('will subscribe')
+          // registration.pushManager.subscribe(subscribeOptions).then((pushSubscription) => {
+          //   console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+          //   setSubscription(pushSubscription)
+          //   sendSubscriptionToBackEnd(pushSubscription);
+          // });
 
         })
         .catch((err) => {
@@ -93,6 +94,7 @@ export default function Home() {
   }, [])
 
   const getRegistration = () => {
+    console.log('getRegistration', )
     return navigator.serviceWorker.getRegistration('/service-worker.js');
   }
 
@@ -152,6 +154,9 @@ export default function Home() {
     registerServiceWorker();
   }, [])
 
+  /**
+   * Subscribe button
+   */
   const subscribe = useCallback(async () => {
     const reg = await getRegistration();
 
@@ -167,6 +172,7 @@ export default function Home() {
       sendSubscriptionToBackEnd(pushSubscription);
     });
   }, [])
+
   return (
     <> 
       <p>version1</p>
