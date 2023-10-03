@@ -126,7 +126,7 @@ export default function Home() {
 
     button.current?.addEventListener('click', function() {
       console.log('is clicked!')
-      if (!window?.Notification) {
+      if (window?.Notification) {
         window.Notification.requestPermission().then((permission: NotificationPermission) => {
           console.log('permission', permission)
           if (permission === "granted") {
