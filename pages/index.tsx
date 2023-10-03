@@ -38,6 +38,7 @@ export default function Home() {
         .register('/service-worker.js')
         .then((registration) => {
           console.log('Service worker successfully registered.');
+          registration.showNotification('Hi there!');
           const subscribeOptions: PushSubscriptionOptionsInit = {
             userVisibleOnly: true,
             applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
@@ -59,20 +60,20 @@ export default function Home() {
   }, [])
 
 
-  const askNotificationPermission = useCallback(() => {
-    // const notificationManager = window.Notification || ServiceWorkerRegistration.showNotification()
-    if (!window?.Notification) {
-      return alert("This browser does not support desktop notification");
-    } else if (window.Notification.permission === "granted") {
-      new window.Notification("Hi theee the notification permission has been granted for pingfy!");
-    } else if (window.Notification.permission == "denied") {
-      window.Notification.requestPermission().then((permission: NotificationPermission) => {
-        if (permission === "granted") {
-          new Notification("Hi there!");
-        }
-      });
-    }
-  }, [])
+  // const askNotificationPermission = useCallback(() => {
+  //   // const notificationManager = window.Notification || ServiceWorkerRegistration.showNotification()
+  //   if (!window?.Notification) {
+  //     return alert("This browser does not support desktop notification");
+  //   } else if (window.Notification.permission === "granted") {
+  //     new window.Notification("Hi theee the notification permission has been granted for pingfy!");
+  //   } else if (window.Notification.permission == "denied") {
+  //     window.Notification.requestPermission().then((permission: NotificationPermission) => {
+  //       if (permission === "granted") {
+  //         new Notification("Hi there!");
+  //       }
+  //     });
+  //   }
+  // }, [])
 
   const askPermissionAndSubscribe = useCallback(async () => { }, [])
 
@@ -80,7 +81,7 @@ export default function Home() {
    * register a service worker
    */
   useEffect((): void => {
-    askNotificationPermission()
+    // askNotificationPermission()
     registerServiceWorker();
   }, [])
 
