@@ -76,7 +76,8 @@ export default function Home() {
           };
 
           console.log('will subscribe')
-          console.log('pushMangaer', registration.pushManager.getSubscription(), registration.pushManager.permissionState())
+          registration.pushManager.getSubscription().then(console.log).catch(console.log)
+          registration.pushManager.permissionState().then(console.log).catch(console.log)
           registration.pushManager.subscribe(subscribeOptions).then((pushSubscription) => {
             console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
             setSubscription(pushSubscription)
