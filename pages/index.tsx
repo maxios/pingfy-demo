@@ -35,7 +35,7 @@ function checkBrowserAndDeviceType() {
  * send subscription to backend to store
  */
 async function sendSubscriptionToBackEnd(subscription: PushSubscription) {
-  const response = await fetch('https://gentle-island-01019-ea84504a6e5e.herokuapp.com/', {
+  const response = await fetch('https://gentle-island-01019-ea84504a6e5e.herokuapp.com/subscribe/general', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ async function sendSubscriptionToBackEnd(subscription: PushSubscription) {
 }
 export default function Home() {
   const [subscription, setSubscription] = useState({});
-
+  const subscribeButton = useRef<HTMLButtonElement>(null);
 
   /** 
    * unsubscribe from current subscription
@@ -99,7 +99,7 @@ export default function Home() {
   }
 
 
-  const askNotificationPermission = useCallback(() => {
+  const askNotificationPermission = useCallback((): Promise<void> | void => {
     const [browserType, isMobile] = checkBrowserAndDeviceType()
     
     console.log(browserType, isMobile)
@@ -107,57 +107,30 @@ export default function Home() {
     if (browserType === "Chrome" && isMobile) return;
 
     // const notificationManager = window.Notification || ServiceWorkerRegistration.showNotification()
-    if (!window?.Notification) {
-      return alert("This browser does not support desktop notification");
-    } else if (window.Notification.permission === "granted") {
-      new window.Notification("Hi theee the notification permission has been granted for pingfy!");
-    } else if (window.Notification.permission == "denied") {
-      window.Notification.requestPermission().then((permission: NotificationPermission) => {
-        if (permission === "granted") {
-          new Notification("Hi there!");
-        }
-      });
-    }
-  }, [])
-
-  const askPermissionAndSubscribe = useCallback(async () => { 
-    askNotificationPermission()
-  }, [])
-
-  const button = useRef<HTMLButtonElement>(null);
-
-  /**
-   * add event listener to button to trigger notification
-   */
-  useEffect(() => {
-    console.log(button)
-
-    button.current?.addEventListener('click', function() {
-      console.log('is clicked!')
-      if (window?.Notification) {
+    return new Promise ((resolve, reject) => {
+      if (!window?.Notification) {
+        const message = 'This browser does not support desktop notification'
+        alert(message);
+        reject(message)
+      } else if (window.Notification.permission === "granted") {
+        new window.Notification("Hi theee the notification permission has been granted for pingfy!");
+        resolve()
+      } else if (window.Notification.permission == "denied") {
         window.Notification.requestPermission().then((permission: NotificationPermission) => {
-          console.log('permission', permission)
           if (permission === "granted") {
-            new Notification("Hi there!");
+            new Notification("Permission granted for pingfy!");
+
+            resolve()
           }
         });
       }
     })
-  }, [button.current])
-
-  /**
-   * register a service worker
-   */
-  useEffect((): void => {
-
-    askNotificationPermission()
-    registerServiceWorker();
   }, [])
 
   /**
-   * Subscribe button
+   * Subscribe handling
    */
-  const subscribe = useCallback(async () => {
+  const subscribe = useCallback(async (): Promise<PushSubscription | undefined> => {
     const reg = await getRegistration();
 
     const subscribeOptions: PushSubscriptionOptionsInit = {
@@ -165,21 +138,66 @@ export default function Home() {
       applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
     };
 
-    console.log('registration', reg)
-    reg?.pushManager.subscribe(subscribeOptions).then((pushSubscription) => {
-      console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-      setSubscription(pushSubscription)
-      sendSubscriptionToBackEnd(pushSubscription);
-    });
+    return reg?.pushManager.subscribe(subscribeOptions);
   }, [])
+
+  /**
+   * persist subscription
+   */
+  const persistSubscription = useCallback(
+    async (pushSubscription: PushSubscription | undefined) => {
+      // Guard
+      if (!pushSubscription) {
+        console.log("No subscription");
+        return;
+      }
+
+      // log
+      console.log(
+        "Received PushSubscription: ",
+        JSON.stringify(pushSubscription)
+      );
+
+      // persist
+      setSubscription(pushSubscription);
+      sendSubscriptionToBackEnd(pushSubscription);
+    },
+    []
+  );
+
+  /**
+   * Flow of subscribing to notification channel
+   */
+  const askPermissionAndSubscribe = useCallback(async () => { 
+    await askNotificationPermission()
+    subscribe().then(persistSubscription)
+  }, [])
+
+
+  /**
+   * add event listener to button to trigger notification
+   */
+  useEffect(() => {
+    console.log(subscribeButton)
+
+    subscribeButton.current?.addEventListener('click', askPermissionAndSubscribe)
+  }, [subscribeButton.current])
+
+  /**
+   * register a service worker
+   */
+  useEffect((): void => {
+    registerServiceWorker();
+  }, [])
+
+
 
   return (
     <> 
       <p>version1</p>
-      <button id="notificationButton" ref={button}>Enable Notifications</button>
+      <button id="notificationButton" ref={subscribeButton}>Subscribe</button>
       <p>permission: </p>
       <p>Subscription: </p> {JSON.stringify(subscription)}
-      <button onClick={subscribe}>Subscribe</button>
     </>
   );
 }
