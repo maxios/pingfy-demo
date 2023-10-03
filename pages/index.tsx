@@ -69,13 +69,14 @@ export default function Home() {
         .register('/service-worker.js')
         .then((registration) => {
           console.log('Service worker successfully registered.');
-          registration.showNotification('Hi there!');
+          registration.showNotification('Hi there, it is the service worker!');
           const subscribeOptions: PushSubscriptionOptionsInit = {
             userVisibleOnly: true,
             applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
           };
 
           console.log('will subscribe')
+          console.log('pushMangaer', registration.pushManager.getSubscription(), registration.pushManager.permissionState())
           registration.pushManager.subscribe(subscribeOptions).then((pushSubscription) => {
             console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
             setSubscription(pushSubscription)
