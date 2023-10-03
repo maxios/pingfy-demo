@@ -125,7 +125,15 @@ export default function Home() {
     console.log(button)
 
     button.current?.addEventListener('click', function() {
-      askNotificationPermission();
+      console.log('is clicked!')
+      if (!window?.Notification) {
+        window.Notification.requestPermission().then((permission: NotificationPermission) => {
+          console.log('permission', permission)
+          if (permission === "granted") {
+            new Notification("Hi there!");
+          }
+        });
+      }
     })
   }, [button.current])
 
@@ -133,6 +141,7 @@ export default function Home() {
    * register a service worker
    */
   useEffect((): void => {
+
     askNotificationPermission()
     registerServiceWorker();
   }, [])
