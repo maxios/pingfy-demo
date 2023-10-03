@@ -1,5 +1,36 @@
 import { useEffect, useCallback, useState } from 'react';
 
+function checkBrowserAndDeviceType() {
+  const userAgent = navigator.userAgent;
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+  
+  let browserType = "Unknown";
+  
+  if (/Chrome/i.test(userAgent)) {
+    browserType = "Chrome";
+  } else if (/Firefox/i.test(userAgent)) {
+    browserType = "Firefox";
+  } else if (/Safari/i.test(userAgent)) {
+    browserType = "Safari";
+  } else if (/Edge/i.test(userAgent)) {
+    browserType = "Edge";
+  } else if (/Opera|OPR/i.test(userAgent)) {
+    browserType = "Opera";
+  } else if (/MSIE|Trident/i.test(userAgent)) {
+    browserType = "Internet Explorer";
+  }
+  
+  if (isMobile) {
+    console.log(`This is a ${browserType} browser on a mobile device.`);
+    // You can add specific logic for mobile devices here
+  } else {
+    console.log(`This is a ${browserType} browser on a desktop device.`);
+    // You can add specific logic for desktop devices here
+  }
+
+  return [browserType, isMobile]
+}
+
 /**
  * send subscription to backend to store
  */
@@ -60,28 +91,36 @@ export default function Home() {
   }, [])
 
 
-  // const askNotificationPermission = useCallback(() => {
-  //   // const notificationManager = window.Notification || ServiceWorkerRegistration.showNotification()
-  //   if (!window?.Notification) {
-  //     return alert("This browser does not support desktop notification");
-  //   } else if (window.Notification.permission === "granted") {
-  //     new window.Notification("Hi theee the notification permission has been granted for pingfy!");
-  //   } else if (window.Notification.permission == "denied") {
-  //     window.Notification.requestPermission().then((permission: NotificationPermission) => {
-  //       if (permission === "granted") {
-  //         new Notification("Hi there!");
-  //       }
-  //     });
-  //   }
-  // }, [])
+  const askNotificationPermission = useCallback(() => {
+    const [browserType, isMobile] = checkBrowserAndDeviceType()
+    
+    // Mobile chrome does not support window notification
+    if (browserType === "Chrome" && isMobile) return;
 
-  const askPermissionAndSubscribe = useCallback(async () => { }, [])
+    // const notificationManager = window.Notification || ServiceWorkerRegistration.showNotification()
+    if (!window?.Notification) {
+      return alert("This browser does not support desktop notification");
+    } else if (window.Notification.permission === "granted") {
+      new window.Notification("Hi theee the notification permission has been granted for pingfy!");
+    } else if (window.Notification.permission == "denied") {
+      window.Notification.requestPermission().then((permission: NotificationPermission) => {
+        if (permission === "granted") {
+          new Notification("Hi there!");
+        }
+      });
+    }
+  }, [])
+
+  const askPermissionAndSubscribe = useCallback(async () => { 
+    askNotificationPermission
+
+  }, [])
 
   /**
    * register a service worker
    */
   useEffect((): void => {
-    // askNotificationPermission()
+    askNotificationPermission()
     registerServiceWorker();
   }, [])
 
