@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 
 function checkBrowserAndDeviceType() {
   const userAgent = navigator.userAgent;
@@ -116,6 +116,19 @@ export default function Home() {
     askNotificationPermission()
   }, [])
 
+  const button = useRef<HTMLButtonElement>(null);
+
+  /**
+   * add event listener to button to trigger notification
+   */
+  useEffect(() => {
+    console.log(button)
+
+    button.current?.addEventListener('click', function() {
+      askNotificationPermission();
+    })
+  }, [button.current])
+
   /**
    * register a service worker
    */
@@ -127,7 +140,7 @@ export default function Home() {
   return (
     <> 
       <p>version1</p>
-      <button id="notificationButton">Enable Notifications</button>
+      <button id="notificationButton" ref={button}>Enable Notifications</button>
       <p>permission: </p>
       <p>Subscription: </p> {JSON.stringify(subscription)}
       <button onClick={askPermissionAndSubscribe}>Subscribe</button>
