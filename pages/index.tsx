@@ -94,6 +94,7 @@ export default function Home() {
   const askNotificationPermission = useCallback(() => {
     const [browserType, isMobile] = checkBrowserAndDeviceType()
     
+    console.log(browserType, isMobile)
     // Mobile chrome does not support window notification
     if (browserType === "Chrome" && isMobile) return;
 
@@ -112,8 +113,7 @@ export default function Home() {
   }, [])
 
   const askPermissionAndSubscribe = useCallback(async () => { 
-    askNotificationPermission
-
+    askNotificationPermission()
   }, [])
 
   /**
