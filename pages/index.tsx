@@ -92,6 +92,10 @@ export default function Home() {
         
   }, [])
 
+  const getRegistration = () => {
+    return navigator.serviceWorker.getRegistration('/service-worker.js');
+  }
+
 
   const askNotificationPermission = useCallback(() => {
     const [browserType, isMobile] = checkBrowserAndDeviceType()
@@ -148,13 +152,28 @@ export default function Home() {
     registerServiceWorker();
   }, [])
 
+  const subscribe = useCallback(async () => {
+    const reg = await getRegistration();
+
+    const subscribeOptions: PushSubscriptionOptionsInit = {
+      userVisibleOnly: true,
+      applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
+    };
+
+    console.log('registration', reg)
+    reg?.pushManager.subscribe(subscribeOptions).then((pushSubscription) => {
+      console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+      setSubscription(pushSubscription)
+      sendSubscriptionToBackEnd(pushSubscription);
+    });
+  }, [])
   return (
     <> 
       <p>version1</p>
       <button id="notificationButton" ref={button}>Enable Notifications</button>
       <p>permission: </p>
       <p>Subscription: </p> {JSON.stringify(subscription)}
-      <button onClick={askPermissionAndSubscribe}>Subscribe</button>
+      <button onClick={subscribe}>Subscribe</button>
     </>
   );
 }
