@@ -56,10 +56,10 @@ self.addEventListener('push', function(event) {
     console.log('data pushed', data);
     // trigger notification in this service worker
     self.registration.showNotification("Vibration Sample", {
-      // title: data.title,
+      title: data.title,
       body: data.body,
-      // vibrate: [200, 100, 200, 100, 200, 100, 200],
-      // tag: "vibration-sample",
+      vibrate: [200, 100, 200, 100, 200, 100, 200],
+      tag: "vibration-sample",
     });
   } else {
     console.log('This push event has no data.');
