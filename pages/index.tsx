@@ -178,8 +178,6 @@ export default function Home() {
    * add event listener to button to trigger notification
    */
   useEffect(() => {
-    console.log(subscribeButton)
-
     subscribeButton.current?.addEventListener('click', askPermissionAndSubscribe)
   }, [subscribeButton.current])
 

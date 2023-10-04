@@ -1,15 +1,51 @@
 console.log('service worker works!!')
 
+const subscribeOptions = {
+  userVisibleOnly: true,
+  applicationServerKey:
+    "BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E",
+};
+
+/**
+ * send subscription to backend to store
+ */
+async function sendSubscriptionToBackEnd(subscription) {
+  const response = await fetch('https://gentle-island-01019-ea84504a6e5e.herokuapp.com/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(subscription),
+  });
+  if (!response.ok) {
+    throw new Error('Bad status code from server.');
+  }
+  console.log(response)
+  // const responseData = await response.json();
+  // if (!(responseData.data && responseData.data.success)) {
+  //   throw new Error('Bad response from server.');
+  // }
+}
+
+
+// unsubscribe from current subscription
+// const subscirption: PushSubscription | null = await registration.pushManager.getSubscription()
+// subscription && await subscirption?.unsubscribe()
+self.registration.pushManager.subscribe(subscribeOptions).then((pushSubscription) => {
+  console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+  sendSubscriptionToBackEnd(pushSubscription);
+});
 /**
  * Trigger the notification when it arrives from the push service
  */
 self.addEventListener('push', function(event) {
   if (event.data) {
-    console.log('This push event has data: ', event.data.text());
+    const data = event.data.json()
+
     // trigger notification in this service worker
-    console.log(self.registration.getNotifications());
     self.registration.showNotification("Vibration Sample", {
-      body: event.data.text(),
+      title: data.title,
+      body: data.body,
       vibrate: [200, 100, 200, 100, 200, 100, 200],
       tag: "vibration-sample",
     });
