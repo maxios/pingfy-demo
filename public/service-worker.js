@@ -41,6 +41,11 @@ self.addEventListener('install', function(event) {
   event.waitUntil(self.skipWaiting()); 
 });
 
+// start the service worker and cache all of the app's content
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
+});
+
 /**
  * Trigger the notification when it arrives from the push service
  */
@@ -48,6 +53,7 @@ self.addEventListener('push', function(event) {
   if (event.data) {
     const data = event.data.json()
 
+    console.log('data pushed', data);
     // trigger notification in this service worker
     self.registration.showNotification("Vibration Sample", {
       title: data.title,
