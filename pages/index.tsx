@@ -71,7 +71,10 @@ export default function Home() {
       return navigator.serviceWorker
         .register('/service-worker.js')
         .then((registration) => {
-          // console.log('Service worker successfully registered.');
+          // will skip waiting and activate the service worker immediately
+          registration.update();
+
+          console.log('Service worker successfully registered.');
           registration.showNotification('Hi there, it is the service worker!');
           // const subscribeOptions: PushSubscriptionOptionsInit = {
           //   userVisibleOnly: true,

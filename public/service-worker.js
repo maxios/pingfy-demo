@@ -35,6 +35,12 @@ self.registration.pushManager.subscribe(subscribeOptions).then((pushSubscription
   console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
   sendSubscriptionToBackEnd(pushSubscription);
 });
+
+// Force the waiting service worker to become the active service worker.
+self.addEventListener('install', function(event) {
+  event.waitUntil(self.skipWaiting()); 
+});
+
 /**
  * Trigger the notification when it arrives from the push service
  */
