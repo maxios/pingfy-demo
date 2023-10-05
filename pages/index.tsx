@@ -185,7 +185,21 @@ export default function Home() {
    * add event listener to button to trigger notification
    */
   useEffect(() => {
-    subscribeButton.current?.addEventListener('click', askPermissionAndSubscribe)
+    const [browserType, isMobile] = checkBrowserAndDeviceType()
+    
+    // Mobile chrome does not support window notification
+    if (browserType === "Safari" && isMobile) {
+      subscribeButton.current?.addEventListener('click', function() {
+        window.Notification.requestPermission().then((permission: NotificationPermission) => {
+          if (permission === "granted") {
+            new Notification("Permission granted for pingfy!");
+          }
+        });
+      })
+    } else {
+      subscribeButton.current?.addEventListener('click', askPermissionAndSubscribe)
+    };
+
   }, [subscribeButton.current])
 
   /**
