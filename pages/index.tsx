@@ -111,14 +111,18 @@ export default function Home() {
 
     // const notificationManager = window.Notification || ServiceWorkerRegistration.showNotification()
     return new Promise ((resolve, reject) => {
+      console.log('inside the promise')
       if (!window?.Notification) {
         const message = 'This browser does not support desktop notification'
         alert(message);
+        console.log(message)
         reject(message)
       } else if (window.Notification.permission === "granted") {
+        console.log('permission granted')
         new window.Notification("Hi theee the notification permission has been granted for pingfy!");
         resolve()
       } else if (window.Notification.permission == "denied") {
+        console.log('permission denied')
         window.Notification.requestPermission().then((permission: NotificationPermission) => {
           if (permission === "granted") {
             new Notification("Permission granted for pingfy!");
