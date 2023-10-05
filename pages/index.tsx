@@ -121,7 +121,7 @@ export default function Home() {
         console.log('permission granted')
         new window.Notification("Hi theee the notification permission has been granted for pingfy!");
         resolve()
-      } else if (window.Notification.permission === "denied") {
+      } else if (["denied", "default"].includes(window.Notification.permission)) {
         console.log('permission denied')
         window.Notification.requestPermission().then((permission: NotificationPermission) => {
           if (permission === "granted") {
