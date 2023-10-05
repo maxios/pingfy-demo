@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useRef } from 'react';
+import { useEffect, useCallback, useState, useRef, useMemo } from 'react';
 
 function checkBrowserAndDeviceType() {
   const userAgent = navigator.userAgent;
@@ -54,6 +54,7 @@ async function sendSubscriptionToBackEnd(subscription: PushSubscription) {
 export default function Home() {
   const [subscription, setSubscription] = useState({});
   const subscribeButton = useRef<HTMLButtonElement>(null);
+    const [browserType, isMobile] = useMemo(checkBrowserAndDeviceType, [])
 
   /** 
    * unsubscribe from current subscription
@@ -103,8 +104,6 @@ export default function Home() {
 
 
   const askNotificationPermission = useCallback((): Promise<void> | void => {
-    const [browserType, isMobile] = checkBrowserAndDeviceType()
-    
     console.log(browserType, isMobile)
     // Mobile chrome does not support window notification
     if (browserType === "Chrome" && isMobile) return;
@@ -145,6 +144,7 @@ export default function Home() {
       applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
     };
 
+    console.log('gonna subscribe with reg', reg);
     return reg?.pushManager.subscribe(subscribeOptions);
   }, [])
 
@@ -176,7 +176,11 @@ export default function Home() {
    * Flow of subscribing to notification channel
    */
   const askPermissionAndSubscribe = useCallback(async () => { 
-    await askNotificationPermission()
+
+    // only ask permission that way if it is not mobile safari
+    if (!(browserType === "Safari" && isMobile)) {
+      await askNotificationPermission()
+    }
     subscribe().then(persistSubscription)
   }, [])
 
@@ -185,8 +189,6 @@ export default function Home() {
    * add event listener to button to trigger notification
    */
   useEffect(() => {
-    const [browserType, isMobile] = checkBrowserAndDeviceType()
-    
     // Mobile chrome does not support window notification
     if (browserType === "Safari" && isMobile) {
       subscribeButton.current?.addEventListener('click', function() {
