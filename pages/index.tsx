@@ -1,7 +1,10 @@
 import { useEffect, useCallback, useState, useRef, useMemo } from 'react';
 
 function checkBrowserAndDeviceType() {
-  const userAgent = window.navigator.userAgent;
+  
+  if (typeof window === 'undefined') return [];
+
+  const userAgent = navigator.userAgent;
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
   
   let browserType = "Unknown";
@@ -54,7 +57,7 @@ async function sendSubscriptionToBackEnd(subscription: PushSubscription) {
 export default function Home() {
   const [subscription, setSubscription] = useState({});
   const subscribeButton = useRef<HTMLButtonElement>(null);
-    const [browserType, isMobile] = useMemo(checkBrowserAndDeviceType, [])
+  const [browserType, isMobile] = useMemo(checkBrowserAndDeviceType, [])
 
   /** 
    * unsubscribe from current subscription
@@ -65,18 +68,19 @@ export default function Home() {
   // }, [])
 
   const registerServiceWorker = useCallback(() => {
-      if (!window.navigator.serviceWorker) {
+      if (typeof window === 'undefined') return;
+      if (!navigator?.serviceWorker) {
         console.log('there is no service worker support!')
         return;
       }
-      return window.navigator.serviceWorker
+      return navigator.serviceWorker
         .register('/service-worker.js')
         .then((registration) => {
           // will skip waiting and activate the service worker immediately
           registration.update();
 
-          console.log('Service worker successfully registered.');
-          registration.showNotification('Hi there, it is the service worker!');
+          console.log('Service worker successfully registered.', registration);
+          // registration.showNotification('Hi there, it is the service worker!');
           // const subscribeOptions: PushSubscriptionOptionsInit = {
           //   userVisibleOnly: true,
           //   applicationServerKey: 'BKuoQRQtmQxFY0QVySzagevEMO0gMw8iVIpEtj4bgCX1EQb_xcsKrWb4p-agefCYgi5aARZMZEuF5QsZrQAw63E'
@@ -98,8 +102,9 @@ export default function Home() {
   }, [])
 
   const getRegistration = () => {
-    console.log('getRegistration', )
-    return window.navigator.serviceWorker.getRegistration('/service-worker.js');
+    console.log('getRegistration')
+    if (typeof window === 'undefined') return
+    return navigator.serviceWorker.getRegistration('/service-worker.js');
   }
 
 
