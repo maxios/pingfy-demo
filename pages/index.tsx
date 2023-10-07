@@ -178,6 +178,7 @@ export default function Home() {
   const askPermissionAndSubscribe = useCallback(async () => { 
 
     // only ask permission that way if it is not mobile safari
+    console.log(browserType, isMobile)
     if (!(browserType === "Safari" && isMobile)) {
       await askNotificationPermission()
     }
