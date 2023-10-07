@@ -190,19 +190,7 @@ export default function Home() {
    */
   useEffect(() => {
     // Mobile chrome does not support window notification
-    if (browserType === "Safari" && isMobile) {
-      subscribeButton.current?.addEventListener('click', function() {
-        console.log('button clicked')
-        window.Notification.requestPermission().then((permission: NotificationPermission) => {
-          console.log('permision requested', permission)
-          if (permission === "granted") {
-            new Notification("Permission granted for pingfy!");
-          }
-        });
-      })
-    } else {
-      subscribeButton.current?.addEventListener('click', askPermissionAndSubscribe)
-    };
+    subscribeButton.current?.addEventListener('click', askPermissionAndSubscribe)
 
   }, [subscribeButton.current])
 
