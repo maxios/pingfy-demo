@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useState, useRef, useMemo } from 'react';
 
 function checkBrowserAndDeviceType() {
-  const userAgent = navigator.userAgent;
+  const userAgent = window.navigator.userAgent;
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
   
   let browserType = "Unknown";
@@ -65,11 +65,11 @@ export default function Home() {
   // }, [])
 
   const registerServiceWorker = useCallback(() => {
-      if (!navigator.serviceWorker) {
+      if (!window.navigator.serviceWorker) {
         console.log('there is no service worker support!')
         return;
       }
-      return navigator.serviceWorker
+      return window.navigator.serviceWorker
         .register('/service-worker.js')
         .then((registration) => {
           // will skip waiting and activate the service worker immediately
@@ -99,7 +99,7 @@ export default function Home() {
 
   const getRegistration = () => {
     console.log('getRegistration', )
-    return navigator.serviceWorker.getRegistration('/service-worker.js');
+    return window.navigator.serviceWorker.getRegistration('/service-worker.js');
   }
 
 
